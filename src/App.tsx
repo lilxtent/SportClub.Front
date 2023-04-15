@@ -1,26 +1,13 @@
 import React from 'react';
-import {Container, Content, CustomProvider, Header, Nav, Sidebar, Sidenav} from "rsuite";
+import {Container, Content, CustomProvider, Header} from "rsuite";
 import {ruRU} from "rsuite/locales";
+import SideBar from "./Components/SideBar";
 
 function App() {
     return (
         <CustomProvider locale={ruRU} theme={"dark"}>
             <Container>
-                <Sidebar
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                >
-                    <Sidenav appearance="default">
-                        <Sidenav.Body>
-                            <Nav>
-                                <Nav.Item>First</Nav.Item>
-                                <Nav.Item>Settings</Nav.Item>
-                            </Nav>
-                        </Sidenav.Body>
-                    </Sidenav>
-                </Sidebar>
+                <SideBar/>
 
                 <Container>
                     <Header>
