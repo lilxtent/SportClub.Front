@@ -10,6 +10,7 @@ function SideBar() {
             }}
         >
             <Sidenav appearance="default">
+                <Sidenav.Header style={{fontSize: 20, padding: 20}}>SportsClub</Sidenav.Header>
                 <Sidenav.Body>
                     <Nav>
                         <Nav.Item>First</Nav.Item>

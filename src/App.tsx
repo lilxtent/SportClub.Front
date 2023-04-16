@@ -2,6 +2,13 @@ import React from 'react';
 import {Container, Content, CustomProvider, Header} from "rsuite";
 import {ruRU} from "rsuite/locales";
 import SideBar from "./Components/SideBar";
+import Visit from "./Models/Visit";
+import VisitsTable from "./Components/Tables/VisitsTable";
+
+const visitsLocal: Visit[] = [
+    new Visit("Biba", new Date()),
+    new Visit("Boba", new Date())
+]
 
 function App() {
     return (
@@ -13,7 +20,9 @@ function App() {
                     <Header>
                         <h2>Page Title</h2>
                     </Header>
-                    <Content>Content</Content>
+                    <Content>
+                        <VisitsTable visits={visitsLocal}/>
+                    </Content>
                 </Container>
             </Container>
         </CustomProvider>
