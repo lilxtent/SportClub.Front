@@ -1,27 +1,24 @@
-import React from 'react';
-import {Container, Content, CustomProvider, Header} from "rsuite";
+import React, {useState} from 'react';
+import {Container, Content, CustomProvider} from "rsuite";
 import {ruRU} from "rsuite/locales";
 import SideBar from "./Components/SideBar";
-import Visit from "./Models/Visit";
-import VisitsTable from "./Components/Tables/VisitsTable";
-
-const visitsLocal: Visit[] = [
-    new Visit("Biba", new Date()),
-    new Visit("Boba", new Date())
-]
+import {Route, Routes} from "react-router-dom";
+import VisitsPage from "./Pages/VisitsPage";
 
 function App() {
+    const [expanded, setExpanded] = useState(true);
+
     return (
         <CustomProvider locale={ruRU} theme={"dark"}>
             <Container>
-                <SideBar/>
-
+                <SideBar
+                    expanded={expanded}
+                    reverseExpended={() => setExpanded(!expanded)}/>
                 <Container>
-                    <Header>
-                        <h2>Page Title</h2>
-                    </Header>
-                    <Content>
-                        <VisitsTable visits={visitsLocal}/>
+                    <Content style={{paddingLeft: 20}}>
+                        <Routes>
+                            <Route path="/visits" element={<VisitsPage/>}/>
+                        </Routes>
                     </Content>
                 </Container>
             </Container>
