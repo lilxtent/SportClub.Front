@@ -1,5 +1,6 @@
 import {Table} from "rsuite";
 import Visit from "../../Models/Visit";
+import React from "react";
 
 const {Column, HeaderCell, Cell} = Table;
 
@@ -7,36 +8,40 @@ interface Props {
     visits: Visit[]
 }
 
+const visitTableStyle = {
+    marginLeft: "auto",
+    marginRight: "auto",
+    borderRadius: "4px",
+    border: "6px solid #1a1d24",
+};
+
 function VisitsTable(props: Props) {
-    const data = props.visits.map(x => new class {
-        VisitorSurname = x.VisitorSurname;
-        VisitorName = x.VisitorName;
-        VisitorPatronymic = x.VisitorPatronymic;
-        Date = x.Date.toLocaleDateString();
-        Time = x.Date.toLocaleTimeString();
-    }())
 
     return (
-        <Table data={data} width={1010} autoHeight={true}>
+        <Table
+            data={props.visits}
+            width={1010}
+            autoHeight={true}
+            style={visitTableStyle}>
             <Column width={250}>
                 <HeaderCell>Фамилия</HeaderCell>
-                <Cell dataKey="VisitorSurname"/>
+                <Cell>{rowData => (rowData as Visit).Client.Surname}</Cell>
             </Column>
             <Column width={250}>
                 <HeaderCell>Имя</HeaderCell>
-                <Cell dataKey="VisitorName"/>
+                <Cell>{rowData => (rowData as Visit).Client.Name}</Cell>
             </Column>
             <Column width={250}>
                 <HeaderCell>Отчество</HeaderCell>
-                <Cell dataKey="VisitorPatronymic"/>
+                <Cell>{rowData => (rowData as Visit).Client.Patronymic}</Cell>
             </Column>
             <Column fixed="right" width={130}>
                 <HeaderCell>Дата</HeaderCell>
-                <Cell dataKey="Date"/>
+                <Cell>{rowData => (rowData as Visit).Date.toLocaleDateString()}</Cell>
             </Column>
             <Column fixed="right" width={130}>
                 <HeaderCell>Время</HeaderCell>
-                <Cell dataKey="Time"/>
+                <Cell>{rowData => (rowData as Visit).Date.toLocaleTimeString()}</Cell>
             </Column>
         </Table>
     );

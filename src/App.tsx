@@ -4,6 +4,7 @@ import {ruRU} from "rsuite/locales";
 import SideBar from "./Components/SideBar";
 import {Route, Routes} from "react-router-dom";
 import VisitsPage from "./Pages/VisitsPage";
+import ClientsPage from "./Pages/ClientsPage";
 
 function App() {
     const [expanded, setExpanded] = useState(true);
@@ -18,6 +19,7 @@ function App() {
                     <Content style={{paddingLeft: 20}}>
                         <Routes>
                             <Route path="/visits" element={<VisitsPage/>}/>
+                            <Route path="/clients" element={<ClientsPage/>}/>
                         </Routes>
                     </Content>
                 </Container>

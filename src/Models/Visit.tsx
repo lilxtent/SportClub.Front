@@ -1,17 +1,13 @@
+import Client from "./Client";
+
 class Visit {
-    public VisitorSurname: string;
-    public VisitorName: string;
-    public VisitorPatronymic: string;
+    public Client: Client;
     public Date: Date;
 
     constructor(
-        visitorSurname: string,
-        visitorName: string,
-        visitorPatronymic: string,
+        client: Client,
         date: Date) {
-        this.VisitorSurname = visitorSurname;
-        this.VisitorName = visitorName;
-        this.VisitorPatronymic = visitorPatronymic;
+        this.Client = client;
         this.Date = date;
     }
 
