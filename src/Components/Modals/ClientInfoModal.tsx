@@ -1,8 +1,8 @@
 import {Button, ButtonToolbar, Col, Container, DatePicker, Divider, Drawer, Form, Grid, Modal, Row} from "rsuite";
 import React from "react";
-import ShowClientInfoModal from "./ShowClientInfoModal";
-import EditClientInfoModal from "./EditClientInfoModal";
+import {SchemaModel, StringType, DateType} from "schema-typed"
 import Client from "../../Models/Client";
+import {FormComponent, FormInstance} from "rsuite/esm/Form/Form";
 
 interface Props {
     open: boolean,
@@ -18,12 +18,20 @@ interface FormValues {
     BirtDate: Date;
 }
 
+const model = SchemaModel({
+    Surname: StringType().isRequired("Фмаилия должна быть указана"),
+    Name: StringType().isRequired("Имя должно быть указано"),
+    Patronymic: StringType().isRequired("Отчество должно быть указано"),
+    BirthDate: DateType().isRequired("Дата рождения должна быть указана")
+})
 
 const colStyle = {
     width: "160px"
 }
 
 function ClientInfoModal(props: Props) {
+    const formRef = React.useRef<FormInstance>(null);
+
     let clientInfo = new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date());
 
     const [formValue, setFormValue] = React.useState(GetFormValue(clientInfo));
@@ -51,10 +59,13 @@ function ClientInfoModal(props: Props) {
                         />
                     </div>
                     <Form
+                        ref={formRef}
                         style={{paddingTop: "2%"}}
+                        model={model}
                         plaintext={!editInfo}
                         formValue={formValue}
                         onChange={x => setFormValue(x as FormValues)}
+                        onSubmit={OnSubmitForm}
                     >
                         <Divider>Личные данные</Divider>
                         <Container>
@@ -103,10 +114,6 @@ function ClientInfoModal(props: Props) {
                                 <ButtonToolbar style={{display: (editInfo ? "" : "none")}}>
                                     <Container>
                                         <Button
-                                            onClick={() => {
-                                                setShowInfo(true);
-                                                setEditInfo(false);
-                                            }}
                                             appearance="primary"
                                             block
                                             type="submit"
@@ -114,10 +121,7 @@ function ClientInfoModal(props: Props) {
                                             Сохранить
                                         </Button>
                                         <Button
-                                            onClick={() => {
-                                                setShowInfo(true);
-                                                setEditInfo(false);
-                                            }}
+                                            onClick={OnCancelEditButtonClick}
                                             style={{paddingTop: "2%"}}
                                             appearance="primary"
                                             color="red"
@@ -134,7 +138,28 @@ function ClientInfoModal(props: Props) {
             </Drawer>
         </div>
     )
+
+    function OnCancelEditButtonClick(): void
+    {
+        setFormValue(GetFormValue(clientInfo));
+
+        formRef.current!.cleanErrors();
+
+        setShowInfo(true);
+        setEditInfo(false);
+    }
+
+    function OnSubmitForm()
+    {
+        if(!formRef.current!.check()) {
+            return;
+        }
+
+        setShowInfo(true);
+        setEditInfo(false);
+    }
 }
+
 
 function GetFormValue(client: Client): FormValues {
     return new class {
@@ -145,19 +170,5 @@ function GetFormValue(client: Client): FormValues {
         BirtDate = client.BirthDate;
     }() as FormValues;
 }
-
-/*{           <ShowClientInfoModal
-                open={props.open && showInfo}
-                clientId={props.clientId}
-                onClose={props.onClose}
-                onEditClick={() => {
-                    setShowInfo(false);
-                    setEditInfo(true);
-                }}/>
-            <EditClientInfoModal
-                open={props.open && editInfo}
-                clientId={props.clientId}
-                onClose={props.onClose}
-            />}*/
 
 export default ClientInfoModal;
