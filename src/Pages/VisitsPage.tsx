@@ -6,13 +6,13 @@ import Client from "../Models/Client";
 
 const visitsLocal: Visit[] = [
     new Visit(
-        new Client(crypto.randomUUID(), "Ходкевич","Александр", "Игоревич", new Date()),
+        new Client(crypto.randomUUID(), "Ходкевич","Александр", "Игоревич", new Date().toDateString()),
         new Date()),
     new Visit(
-        new Client(crypto.randomUUID(),"Тохман","Никита", "Бибович", new Date()),
+        new Client(crypto.randomUUID(),"Тохман","Никита", "Бибович", new Date().toDateString()),
         new Date()),
     new Visit(
-        new Client(crypto.randomUUID(),"Давыдков","Никита", "Пуджевич", new Date()),
+        new Client(crypto.randomUUID(),"Давыдков","Никита", "Пуджевич", new Date().toDateString()),
         new Date()),
 ]
 

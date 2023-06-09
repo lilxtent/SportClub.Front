@@ -6,7 +6,7 @@ const {Column, HeaderCell, Cell} = Table;
 
 interface Props {
     clients: Client[];
-    onRowClick: (client: Client) => void;
+    onRowClick: (clientId: string) => void;
     width: number;
 }
 
@@ -30,26 +30,26 @@ function ClientsTable(props: Props)
             width={props.width}
             autoHeight={true}
             style={clientsTableStyle}
-            onRowClick = {(x) => props.onRowClick(x as Client)/*OnRowCLick((x as Client))*/}>
+            onRowClick = {(x) => props.onRowClick(x.id)/*OnRowCLick((x as Client))*/}>
             <Column width={0}>
                 <HeaderCell>Id</HeaderCell>
-                <Cell dataKey="Id"/>
+                <Cell dataKey="id"/>
             </Column>
             <Column width={columnWidth}>
                 <HeaderCell>Фамилия</HeaderCell>
-                <Cell dataKey="Surname"/>
+                <Cell dataKey="surname"/>
             </Column>
             <Column width={columnWidth}>
                 <HeaderCell>Имя</HeaderCell>
-                <Cell dataKey="Name"/>
+                <Cell dataKey="name"/>
             </Column>
             <Column width={columnWidth}>
                 <HeaderCell>Отчество</HeaderCell>
-                <Cell dataKey="Patronymic"/>
+                <Cell dataKey="patronymic"/>
             </Column>
             <Column width={columnWidth}>
                 <HeaderCell>Дата рождения</HeaderCell>
-                <Cell>{rowData => rowData.BirthDate.toLocaleDateString()}</Cell>
+                <Cell dataKey="birthDate">{rowData => new Date(rowData.birthDate).toLocaleDateString()}</Cell>
             </Column>
         </Table>
     )

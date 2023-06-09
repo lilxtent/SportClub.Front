@@ -1,30 +1,14 @@
-import {Container, Content, Form, Header, Input, InputGroup, Modal, Pagination} from 'rsuite';
+import {Container, Content, Input, InputGroup, Pagination} from 'rsuite';
 import SearchIcon from '@rsuite/icons/Search';
 import Client from "../Models/Client";
 import ClientsTable from "../Components/Tables/ClientsTable";
-import client from "../Models/Client";
 import React from "react";
-import ClientInfoModal from "../Components/Modals/ClientInfoModal";
-
-const clientsMock: Client[] = [
-    new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date()),
-    new Client(crypto.randomUUID(), "Тохман", "Никита", "Бибович", new Date()),
-    new Client(crypto.randomUUID(), "Давыдков", "Никита", "Пуджевич", new Date()),
-    new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date()),
-    new Client(crypto.randomUUID(), "Тохман", "Никита", "Бибович", new Date()),
-    new Client(crypto.randomUUID(), "Давыдков", "Никита", "Пуджевич", new Date()),
-    new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date()),
-    new Client(crypto.randomUUID(), "Тохман", "Никита", "Бибович", new Date()),
-    new Client(crypto.randomUUID(), "Давыдков", "Никита", "Пуджевич", new Date()),
-    new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date()),
-    new Client(crypto.randomUUID(), "Тохман", "Никита", "Бибович", new Date()),
-    new Client(crypto.randomUUID(), "Давыдков", "Никита", "Пуджевич", new Date()),
-    new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date()),
-    new Client(crypto.randomUUID(), "Тохман", "Никита", "Бибович", new Date()),
-    new Client(crypto.randomUUID(), "Давыдков", "Никита", "Пуджевич", new Date()),
-]
+import ClientInfoDrawer from "../Components/Drawers/ClientInfoDrawer";
+import ClientsService from "../Services/ClientsService";
+import {SearchClientsRequest} from "../Services/Requests/SearchClientsRequest";
 
 const tableWidth = 1000;
+const rowsInTable = 15;
 
 const containerStyles = {
     width: tableWidth + "px",
@@ -33,13 +17,20 @@ const containerStyles = {
     paddingTop: "5%"
 }
 
+
 function ClientsPage() {
-    let searchValue = "";
 
     const [activePage, setActivePage] = React.useState(1);
-    const [clients, setClients] = React.useState(clientsMock);
-    const [clientToShowInfoAbout, setClientToShowInfoAbout] = React.useState("");
+    const [totalClientsCount, setTotalClientsCount] = React.useState(0);
+    const [clients, setClients] = React.useState<Client[]>([]);
+    const [clientToShowInfoAbout, setClientToShowInfoAbout] = React.useState<Client>();
     const [showClientModalPage, setShowClientModalPage] = React.useState(false);
+    const [searchValue, setSearchValue] = React.useState("");
+
+
+    React.useEffect(() => {(async () => UseEffect())()}, [activePage]);
+
+
 
 
     return (
@@ -48,21 +39,18 @@ function ClientsPage() {
                 <Content>
                     <InputGroup>
                         <Input type="text"
-                               onChange={(x, event) => searchValue = x}
+                               onChange={(x, event) => OnSearchInput(x)}
                         />
-                        <InputGroup.Button onClick={(x) => {
-                            //тут будут задаваться клиенты
-                            setActivePage(1);
-                            setClients(clientsMock);
-                        }}>
+                        <InputGroup.Button onClick={(x) => OnSearchButtonClick()}>
                             <SearchIcon/>
                         </InputGroup.Button>
                     </InputGroup>
                     <div style={{marginTop: "10px"}}>
                         <ClientsTable
                             clients={clients}
-                            onRowClick={(client) => {
-                                setClientToShowInfoAbout(client.Id);
+                            onRowClick={async (clientId) => {
+                                const clientInfo = await ClientsService.GetClient(clientId);
+                                setClientToShowInfoAbout(clientInfo)
                                 setShowClientModalPage(true);
                             }}
                             width={tableWidth}
@@ -79,19 +67,53 @@ function ClientsPage() {
                         size="md"
                         prev
                         next
-                        total={200}
-                        limit={20}
+                        maxButtons={20}
+                        total={totalClientsCount}
+                        limit={15}
                         activePage={activePage}
                         onChangePage={setActivePage}
                     />
                 </Content>
             </Container>
-            <ClientInfoModal
-                clientId={clientToShowInfoAbout}
-                open={showClientModalPage}
-                onClose={() => setShowClientModalPage(false)}/>
+            {showClientModalPage
+                ? <ClientInfoDrawer
+                    client={clientToShowInfoAbout!}
+                    open={showClientModalPage}
+                    onClose={async () => {await UseEffect(); setShowClientModalPage(false);}}/>
+                : <div/>}
         </div>
     )
+
+    async function UseEffect()
+    {
+        if (searchValue === "") {
+
+            const result = await ClientsService.GetClients(rowsInTable * (activePage - 1), rowsInTable);
+
+            setTotalClientsCount(result.totalCount);
+            setClients(result.clients);
+        }
+    }
+
+    async function OnSearchButtonClick()
+    {
+        if (searchValue === "") {
+            await UseEffect();
+
+            return;
+        }
+
+        const searchResult = await ClientsService.SearchClients(new SearchClientsRequest(searchValue))
+
+        setClients(searchResult.clients);
+        setTotalClientsCount(searchResult.totalCount);
+        setActivePage(1);
+    }
+
+    async function OnSearchInput(input: string)
+    {
+        setSearchValue(input);
+    }
 }
 
 export default ClientsPage;

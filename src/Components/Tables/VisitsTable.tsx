@@ -25,15 +25,15 @@ function VisitsTable(props: Props) {
             style={visitTableStyle}>
             <Column width={250}>
                 <HeaderCell>Фамилия</HeaderCell>
-                <Cell>{rowData => (rowData as Visit).Client.Surname}</Cell>
+                <Cell>{rowData => (rowData as Visit).Client.surname}</Cell>
             </Column>
             <Column width={250}>
                 <HeaderCell>Имя</HeaderCell>
-                <Cell>{rowData => (rowData as Visit).Client.Name}</Cell>
+                <Cell>{rowData => (rowData as Visit).Client.name}</Cell>
             </Column>
             <Column width={250}>
                 <HeaderCell>Отчество</HeaderCell>
-                <Cell>{rowData => (rowData as Visit).Client.Patronymic}</Cell>
+                <Cell>{rowData => (rowData as Visit).Client.patronymic}</Cell>
             </Column>
             <Column fixed="right" width={130}>
                 <HeaderCell>Дата</HeaderCell>

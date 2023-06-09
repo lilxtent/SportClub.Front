@@ -3,38 +3,37 @@ import React from "react";
 import {SchemaModel, StringType, DateType} from "schema-typed"
 import Client from "../../Models/Client";
 import {FormComponent, FormInstance} from "rsuite/esm/Form/Form";
+import ClientsService from "../../Services/ClientsService";
+import client from "../../Models/Client";
 
 interface Props {
     open: boolean,
     onClose: () => void,
-    clientId: string
+    client: Client
 }
 
 interface FormValues {
-    Id: string;
-    Surname: string;
-    Name: string;
-    Patronymic: string;
-    BirtDate: Date;
+    id: string;
+    surname: string;
+    name: string;
+    patronymic: string;
+    birthDate: Date;
 }
 
 const model = SchemaModel({
-    Surname: StringType().isRequired("Фмаилия должна быть указана"),
-    Name: StringType().isRequired("Имя должно быть указано"),
-    Patronymic: StringType().isRequired("Отчество должно быть указано"),
-    BirthDate: DateType().isRequired("Дата рождения должна быть указана")
+    surname: StringType().isRequired("Фамаилия должна быть указана"),
+    name: StringType().isRequired("Имя должно быть указано"),
+    patronymic: StringType().isRequired("Отчество должно быть указано"),
+    birthDate: DateType().isRequired("Дата рождения должна быть указана")
 })
 
 const colStyle = {
     width: "160px"
 }
 
-function ClientInfoModal(props: Props) {
+function ClientInfoDrawer(props: Props) {
+    const [formValue, setFormValue] = React.useState<FormValues>(GetFormValue(props.client));
     const formRef = React.useRef<FormInstance>(null);
-
-    let clientInfo = new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date());
-
-    const [formValue, setFormValue] = React.useState(GetFormValue(clientInfo));
     const [showInfo, setShowInfo] = React.useState(true);
     const [editInfo, setEditInfo] = React.useState(false);
 
@@ -42,7 +41,7 @@ function ClientInfoModal(props: Props) {
         <div>
             <Drawer open={props.open} onClose={props.onClose}>
                 <Drawer.Header>
-                    <b style={{fontSize: "18pt"}}>{`${clientInfo.Surname}  ${clientInfo.Name}  ${clientInfo.Patronymic}`}</b>
+                    <b style={{fontSize: "18pt"}}>{`${props.client.surname}  ${props.client.name}  ${props.client.patronymic}`}</b>
                 </Drawer.Header>
                 <Drawer.Body>
                     <div>
@@ -72,29 +71,29 @@ function ClientInfoModal(props: Props) {
                             <Grid fluid>
                                 <Row>
                                     <Col style={colStyle}>
-                                        <Form.Group controlId="Surname">
+                                        <Form.Group controlId="surname">
                                             <Form.ControlLabel>Фамилия</Form.ControlLabel>
-                                            <Form.Control name="Surname" style={colStyle} checkAsync/>
+                                            <Form.Control name="surname" style={colStyle} checkAsync/>
                                         </Form.Group>
                                     </Col>
                                     <Col style={colStyle}>
-                                        <Form.Group controlId="Name">
+                                        <Form.Group controlId="name">
                                             <Form.ControlLabel>Имя</Form.ControlLabel>
-                                            <Form.Control name="Name" style={colStyle}/>
+                                            <Form.Control name="name" style={colStyle}/>
                                         </Form.Group>
                                     </Col>
                                     <Col style={colStyle}>
-                                        <Form.Group controlId="Patronymic">
+                                        <Form.Group controlId="patronymic">
                                             <Form.ControlLabel>Отчество</Form.ControlLabel>
-                                            <Form.Control name="Patronymic" style={colStyle}/>
+                                            <Form.Control name="patronymic" style={colStyle}/>
                                         </Form.Group>
                                     </Col>
                                 </Row>
                                 <Row style={{paddingTop: "2%"}}>
                                     <Col style={colStyle}>
-                                        <Form.Group controlId="BirtDate">
+                                        <Form.Group controlId="birthDate">
                                             <Form.ControlLabel>ДатаРождения</Form.ControlLabel>
-                                            <Form.Control name="BirtDate" accepter={DatePicker} style={colStyle}/>
+                                            <Form.Control name="birthDate" accepter={DatePicker} style={colStyle}/>
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -141,7 +140,7 @@ function ClientInfoModal(props: Props) {
 
     function OnCancelEditButtonClick(): void
     {
-        setFormValue(GetFormValue(clientInfo));
+        setFormValue(GetFormValue(props.client));
 
         formRef.current!.cleanErrors();
 
@@ -149,11 +148,19 @@ function ClientInfoModal(props: Props) {
         setEditInfo(false);
     }
 
-    function OnSubmitForm()
+    async function OnSubmitForm()
     {
         if(!formRef.current!.check()) {
             return;
         }
+
+        await ClientsService.UpdateClient(new Client(
+            formValue.id,
+            formValue.surname,
+            formValue.name,
+            formValue.patronymic,
+            formValue.birthDate.toISOString()
+        ));
 
         setShowInfo(true);
         setEditInfo(false);
@@ -163,12 +170,12 @@ function ClientInfoModal(props: Props) {
 
 function GetFormValue(client: Client): FormValues {
     return new class {
-        Id = client.Id;
-        Surname = client.Surname;
-        Name = client.Name;
-        Patronymic = client.Patronymic;
-        BirtDate = client.BirthDate;
+        id = client.id;
+        surname = client.surname;
+        name = client.name;
+        patronymic = client.patronymic;
+        birthDate = new Date(client.birthDate);
     }() as FormValues;
 }
 
-export default ClientInfoModal;
+export default ClientInfoDrawer;

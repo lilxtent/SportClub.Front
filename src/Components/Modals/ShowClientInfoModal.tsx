@@ -9,7 +9,7 @@ interface Props {
 }
 
 function ShowClientInfoModal(props: Props) {
-    let clientInfo =     new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date());
+    let clientInfo =     new Client(crypto.randomUUID(), "Ходкевич", "Александр", "Игоревич", new Date().toDateString());
 
 
         return (
