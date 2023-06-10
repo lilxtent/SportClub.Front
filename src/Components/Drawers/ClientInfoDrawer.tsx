@@ -18,6 +18,7 @@ interface FormValues {
     name: string;
     patronymic: string;
     birthDate: Date;
+    phone: string
 }
 
 const model = SchemaModel({
@@ -31,6 +32,8 @@ const colStyle = {
     width: "160px"
 }
 
+const phoneNumberIsNullMessage = "не указан";
+
 function ClientInfoDrawer(props: Props) {
     const [formValue, setFormValue] = React.useState<FormValues>(GetFormValue(props.client));
     const formRef = React.useRef<FormInstance>(null);
@@ -40,10 +43,13 @@ function ClientInfoDrawer(props: Props) {
     return (
         <div>
             <Drawer open={props.open} onClose={props.onClose}>
+
                 <Drawer.Header>
                     <b style={{fontSize: "18pt"}}>{`${props.client.surname}  ${props.client.name}  ${props.client.patronymic}`}</b>
                 </Drawer.Header>
+
                 <Drawer.Body>
+
                     <div>
                         <img
                             style={{
@@ -57,6 +63,7 @@ function ClientInfoDrawer(props: Props) {
                             alt={"фото"}
                         />
                     </div>
+
                     <Form
                         ref={formRef}
                         style={{paddingTop: "2%"}}
@@ -66,40 +73,58 @@ function ClientInfoDrawer(props: Props) {
                         onChange={x => setFormValue(x as FormValues)}
                         onSubmit={OnSubmitForm}
                     >
+
                         <Divider>Личные данные</Divider>
+
                         <Container>
                             <Grid fluid>
+
                                 <Row>
+
                                     <Col style={colStyle}>
                                         <Form.Group controlId="surname">
                                             <Form.ControlLabel>Фамилия</Form.ControlLabel>
                                             <Form.Control name="surname" style={colStyle} checkAsync/>
                                         </Form.Group>
                                     </Col>
+
                                     <Col style={colStyle}>
                                         <Form.Group controlId="name">
                                             <Form.ControlLabel>Имя</Form.ControlLabel>
                                             <Form.Control name="name" style={colStyle}/>
                                         </Form.Group>
                                     </Col>
+
                                     <Col style={colStyle}>
                                         <Form.Group controlId="patronymic">
                                             <Form.ControlLabel>Отчество</Form.ControlLabel>
                                             <Form.Control name="patronymic" style={colStyle}/>
                                         </Form.Group>
                                     </Col>
+
                                 </Row>
+
                                 <Row style={{paddingTop: "2%"}}>
+
                                     <Col style={colStyle}>
                                         <Form.Group controlId="birthDate">
                                             <Form.ControlLabel>ДатаРождения</Form.ControlLabel>
                                             <Form.Control name="birthDate" accepter={DatePicker} style={colStyle}/>
                                         </Form.Group>
                                     </Col>
+
+                                    <Col style={colStyle}>
+                                        <Form.Group controlId="phone">
+                                            <Form.ControlLabel>Номер телефона</Form.ControlLabel>
+                                            <Form.Control name="phone" placeholder={phoneNumberIsNullMessage} style={colStyle}/>
+                                        </Form.Group>
+                                    </Col>
                                 </Row>
                             </Grid>
                         </Container>
+
                         <Divider>Действия</Divider>
+
                         <Container>
                             <Form.Group>
                                 <ButtonToolbar style={{display: (editInfo ? "none" : "")}}>
@@ -154,12 +179,19 @@ function ClientInfoDrawer(props: Props) {
             return;
         }
 
+        let phone : string | null = formValue.phone;
+
+        if (phone.trim() === "" || phone === phoneNumberIsNullMessage){
+            phone = null;
+        }
+
         await ClientsService.UpdateClient(new Client(
             formValue.id,
             formValue.surname,
             formValue.name,
             formValue.patronymic,
-            formValue.birthDate.toISOString()
+            formValue.birthDate.toISOString(),
+            phone
         ));
 
         setShowInfo(true);
@@ -175,6 +207,7 @@ function GetFormValue(client: Client): FormValues {
         name = client.name;
         patronymic = client.patronymic;
         birthDate = new Date(client.birthDate);
+        phone = client.phone ?? phoneNumberIsNullMessage
     }() as FormValues;
 }
 
