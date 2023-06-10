@@ -15,7 +15,8 @@ const clientsTableStyle = {
     marginRight: "auto",
     borderRadius: "4px",
     border: "6px solid #1a1d24",
-    cursor: "pointer"
+    cursor: "pointer",
+    marginTop: "10px"
 };
 
 const numberOfVisibleColumns = 4;

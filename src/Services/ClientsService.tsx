@@ -5,7 +5,6 @@ import {SearchClientsRequest} from "./Requests/SearchClientsRequest";
 
 class ClientsService {
     static BasePath = "http://localhost:5000/clients/";
-    sender = new XMLHttpRequest();
 
     public static async GetClient(id: string): Promise<Client> {
         const response = await fetch(

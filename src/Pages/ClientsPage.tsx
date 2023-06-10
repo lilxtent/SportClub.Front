@@ -28,15 +28,16 @@ function ClientsPage() {
     const [searchValue, setSearchValue] = React.useState("");
 
 
-    React.useEffect(() => {(async () => UseEffect())()}, [activePage]);
-
-
+    React.useEffect(() => {
+        (async () => UseEffect())()
+    }, [activePage]);
 
 
     return (
         <div>
             <Container style={containerStyles}>
                 <Content>
+
                     <InputGroup>
                         <Input type="text"
                                onChange={(x, event) => OnSearchInput(x)}
@@ -45,17 +46,16 @@ function ClientsPage() {
                             <SearchIcon/>
                         </InputGroup.Button>
                     </InputGroup>
-                    <div style={{marginTop: "10px"}}>
-                        <ClientsTable
-                            clients={clients}
-                            onRowClick={async (clientId) => {
-                                const clientInfo = await ClientsService.GetClient(clientId);
-                                setClientToShowInfoAbout(clientInfo)
-                                setShowClientModalPage(true);
-                            }}
-                            width={tableWidth}
-                        />
-                    </div>
+
+                    <ClientsTable
+                        clients={clients}
+                        onRowClick={async (clientId) => {
+                            const clientInfo = await ClientsService.GetClient(clientId);
+                            setClientToShowInfoAbout(clientInfo)
+                            setShowClientModalPage(true);
+                        }}
+                        width={tableWidth}
+                    />
 
                     <Pagination
                         style={{
@@ -69,7 +69,7 @@ function ClientsPage() {
                         next
                         maxButtons={20}
                         total={totalClientsCount}
-                        limit={15}
+                        limit={rowsInTable}
                         activePage={activePage}
                         onChangePage={setActivePage}
                     />
@@ -79,15 +79,16 @@ function ClientsPage() {
                 ? <ClientInfoDrawer
                     client={clientToShowInfoAbout!}
                     open={showClientModalPage}
-                    onClose={async () => {await UseEffect(); setShowClientModalPage(false);}}/>
+                    onClose={async () => {
+                        await UseEffect();
+                        setShowClientModalPage(false);
+                    }}/>
                 : <div/>}
         </div>
     )
 
-    async function UseEffect()
-    {
+    async function UseEffect() {
         if (searchValue === "") {
-
             const result = await ClientsService.GetClients(rowsInTable * (activePage - 1), rowsInTable);
 
             setTotalClientsCount(result.totalCount);
@@ -95,8 +96,7 @@ function ClientsPage() {
         }
     }
 
-    async function OnSearchButtonClick()
-    {
+    async function OnSearchButtonClick() {
         if (searchValue === "") {
             await UseEffect();
 
@@ -110,8 +110,7 @@ function ClientsPage() {
         setActivePage(1);
     }
 
-    async function OnSearchInput(input: string)
-    {
+    async function OnSearchInput(input: string) {
         setSearchValue(input);
     }
 }
