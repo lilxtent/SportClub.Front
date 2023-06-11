@@ -6,6 +6,7 @@ import {Route, Routes} from "react-router-dom";
 import VisitsPage from "./Pages/VisitsPage";
 import ClientsPage from "./Pages/ClientsPage";
 import {SubscriptionsPage} from "./Pages/SubscriptionsPage";
+import {PaymentsPage} from "./Pages/PaymentsPage";
 
 function App() {
     const [expanded, setExpanded] = useState(true);
@@ -22,6 +23,7 @@ function App() {
                             <Route path="/visits" element={<VisitsPage/>}/>
                             <Route path="/clients" element={<ClientsPage/>}/>
                             <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
+                            <Route path="/payments" element={<PaymentsPage/>}/>
                         </Routes>
                     </Content>
                 </Container>

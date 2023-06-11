@@ -5,6 +5,8 @@ import PeoplesIcon from '@rsuite/icons/Peoples';
 import AngleLeftIcon from '@rsuite/icons/legacy/AngleLeft';
 import AngleRightIcon from '@rsuite/icons/legacy/AngleRight';
 import PageIcon from '@rsuite/icons/Page';
+import CreditCardPlusIcon from '@rsuite/icons/CreditCardPlus';
+
 interface Props {
     expanded: boolean,
     reverseExpended: () => void,
@@ -30,6 +32,7 @@ function SideBar(props: Props) {
                         <Nav.Item href="/visits" icon={<HistoryIcon/>}>Визиты</Nav.Item>
                         <Nav.Item href="/clients" icon={<PeoplesIcon/>}>Клиенты</Nav.Item>
                         <Nav.Item href="/subscriptions" icon={<PageIcon/>}>Абонементы</Nav.Item>
+                        <Nav.Item href="/payments" icon={<CreditCardPlusIcon/>}>Платежи</Nav.Item>
                     </Nav>
 
                 </Sidenav.Body>
