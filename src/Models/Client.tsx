@@ -5,7 +5,7 @@ class Client {
         public name: string,
         public patronymic: string,
         public birthDate: string,
-        public phone: string | null
+        public phone?: string | null
     ) {}
 }
 

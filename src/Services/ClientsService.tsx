@@ -45,8 +45,19 @@ class ClientsService {
         return (await response.json()) as SearchClientsResponse;
     }
 
+    public static async AddClient(client: Client) {
+        await fetch(
+            `${this.BasePath}add`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8'
+                },
+                body: JSON.stringify(client)
+            });
+    }
+
     public static async UpdateClient(client: Client) {
-        console.log(JSON.stringify(client))
         await fetch(
             `${this.BasePath}update`,
             {

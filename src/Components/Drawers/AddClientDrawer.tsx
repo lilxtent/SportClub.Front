@@ -8,17 +8,22 @@ import ClientsService from "../../Services/ClientsService";
 interface Props {
     open: boolean,
     onClose: () => void,
-    client: Client,
-    editInfo?: boolean
+    close: () => void
 }
 
-interface FormValues {
-    id: string;
-    surname: string;
-    name: string;
-    patronymic: string;
-    birthDate: Date;
-    phone: string
+class FormValues {
+    public surname: string;
+    public name: string;
+    public patronymic: string;
+    public birthDate: Date;
+    public phone?: string;
+
+    constructor() {
+        this.surname = "";
+        this.name = "";
+        this.patronymic = "";
+        this.birthDate = new Date();
+    }
 }
 
 const model = SchemaModel({
@@ -32,19 +37,20 @@ const colStyle = {
     width: "160px"
 }
 
-const phoneNumberIsNullMessage = "не указан";
-
-function ClientInfoDrawer(props: Props) {
-    const [formValue, setFormValue] = React.useState<FormValues>(GetFormValue(props.client));
+export function AddClientDrawer(props: Props) {
+    const [formValue, setFormValue] = React.useState<FormValues>(new FormValues());
+    const [isOpen, setIsOpen] = React.useState(props.open);
     const formRef = React.useRef<FormInstance>(null);
-    const [editInfo, setEditInfo] = React.useState(props.editInfo ?? false);
 
     return (
         <div>
-            <Drawer open={props.open} onClose={props.onClose}>
+            <Drawer open={isOpen} onClose={() => {
+                props.onClose();
+                setIsOpen(false);
+            }}>
 
                 <Drawer.Header>
-                    <b style={{fontSize: "18pt"}}>{`${props.client.surname}  ${props.client.name}  ${props.client.patronymic}`}</b>
+                    <b style={{fontSize: "18pt"}}>Новый клиент</b>
                 </Drawer.Header>
 
                 <Drawer.Body>
@@ -67,7 +73,6 @@ function ClientInfoDrawer(props: Props) {
                         ref={formRef}
                         style={{paddingTop: "2%"}}
                         model={model}
-                        plaintext={!editInfo}
                         formValue={formValue}
                         onChange={x => setFormValue(x as FormValues)}
                         onSubmit={OnSubmitForm}
@@ -115,7 +120,7 @@ function ClientInfoDrawer(props: Props) {
                                     <Col style={colStyle}>
                                         <Form.Group controlId="phone">
                                             <Form.ControlLabel>Номер телефона</Form.ControlLabel>
-                                            <Form.Control name="phone" placeholder={phoneNumberIsNullMessage} style={colStyle}/>
+                                            <Form.Control name="phone" style={colStyle}/>
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -126,14 +131,7 @@ function ClientInfoDrawer(props: Props) {
 
                         <Container>
                             <Form.Group>
-                                <ButtonToolbar style={{display: (editInfo ? "none" : "")}}>
-                                    <Container>
-                                        <Button onClick={() => {
-                                            setEditInfo(true)
-                                        }}>Редактировать</Button>
-                                    </Container>
-                                </ButtonToolbar>
-                                <ButtonToolbar style={{display: (editInfo ? "" : "none")}}>
+                                <ButtonToolbar>
                                     <Container>
                                         <Button
                                             appearance="primary"
@@ -163,11 +161,10 @@ function ClientInfoDrawer(props: Props) {
 
     function OnCancelEditButtonClick(): void
     {
-        setFormValue(GetFormValue(props.client));
-
         formRef.current!.cleanErrors();
 
-        setEditInfo(false);
+        setIsOpen(false);
+        props.close();
     }
 
     async function OnSubmitForm()
@@ -176,35 +173,16 @@ function ClientInfoDrawer(props: Props) {
             return;
         }
 
-        let phone : string | null = formValue.phone;
-
-        if (phone.trim() === "" || phone === phoneNumberIsNullMessage){
-            phone = null;
-        }
-
-        await ClientsService.UpdateClient(new Client(
-            formValue.id,
+        await ClientsService.AddClient(new Client(
+            crypto.randomUUID(),
             formValue.surname,
             formValue.name,
             formValue.patronymic,
             formValue.birthDate.toISOString(),
-            phone
+            formValue.phone
         ));
 
-        setEditInfo(false);
+        setIsOpen(false);
+        props.close();
     }
 }
-
-
-function GetFormValue(client: Client): FormValues {
-    return new class {
-        id = client.id;
-        surname = client.surname;
-        name = client.name;
-        patronymic = client.patronymic;
-        birthDate = new Date(client.birthDate);
-        phone = client.phone ?? phoneNumberIsNullMessage
-    }() as FormValues;
-}
-
-export default ClientInfoDrawer;
