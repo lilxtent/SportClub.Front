@@ -26,7 +26,7 @@ export class PaymentsService {
         return (await response.json()) as GetLastPaymentsResponse;
     }
 
-    public static async GetClientLastPayment(clientId: string): Promise<PaymentFullInfo> {
+    public static async GetClientLastPayment(clientId: string): Promise<PaymentFullInfo | null> {
         const response = await fetch(
             `${this.BasePath}client-last?clientId=${clientId}`,
             {
@@ -35,6 +35,10 @@ export class PaymentsService {
                     Accept: 'application/json'
                 }
             });
+
+        if (response.status === 204) {
+            return null;
+        }
 
         return (await response.json()) as PaymentFullInfo;
     }

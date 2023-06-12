@@ -18,14 +18,14 @@ function SideBar(props: Props) {
     return (
         <Sidebar
             style={{
-                display: 'flex',
-                flexDirection: 'column',
-                position: "fixed"
+                display: "flex",
+                flexDirection: "column",
+                position: "fixed",
             }}
             width={props.expanded ? 200 : 56}
             collapsible
         >
-            <Sidenav expanded={props.expanded} appearance="default" style={{ height: window.innerHeight }}>
+            <Sidenav expanded={props.expanded} appearance="default" style={{ height: window.innerHeight - 56}}>
                 <Sidenav.Header style={{fontSize: 20, padding: 20}}>{props.expanded ? "Sports Club" : "SC"}</Sidenav.Header>
 
                 <Sidenav.Body>
@@ -40,15 +40,20 @@ function SideBar(props: Props) {
 
                 </Sidenav.Body>
 
-                <Navbar appearance="default" className="nav-toggle">
-                    <Nav pullRight>
-                        <Nav.Item onClick={() => props.reverseExpended()} style={{width: 56, textAlign: 'center'}}>
-                            {props.expanded ? <AngleLeftIcon/> : <AngleRightIcon/>}
-                        </Nav.Item>
-                    </Nav>
-                </Navbar>
-
             </Sidenav>
+
+            <Navbar appearance="default" className="nav-toggle" id="bottomCollapse">
+                <Nav pullRight>
+                    <Nav.Item
+                        onClick={() => props.reverseExpended()}
+                        style={{
+                            width: 56,
+                            textAlign: 'center'
+                        }}>
+                        {props.expanded ? <AngleLeftIcon/> : <AngleRightIcon/>}
+                    </Nav.Item>
+                </Nav>
+            </Navbar>
         </Sidebar>
     )
 }

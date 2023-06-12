@@ -72,7 +72,7 @@ function ClientInfoDrawer(props: Props) {
     const [clientSubscriptionFormValue, setSubscriptionFormValue] = React.useState<SubscriptionFormValue>();
     const formRef = React.useRef<FormInstance>(null);
     const [editInfo, setEditInfo] = React.useState(props.editInfo ?? false);
-    const [lastPayment, setLastPayment] = React.useState<PaymentFullInfo>()
+    const [lastPayment, setLastPayment] = React.useState<PaymentFullInfo | null>()
     const [isChooseSubscriptionToProlongModalOpen, setIsChooseSubscriptionToProlongModalOpen] = React.useState(false);
     const [availableSubscriptions, setAvailableSubscriptions] = React.useState<Subscription[]>([])
 
@@ -206,7 +206,7 @@ function ClientInfoDrawer(props: Props) {
                     >
 
                         <Container>
-                            {lastPayment ===undefined || lastPayment === null
+                            {lastPayment === undefined || lastPayment === null
                                 ? <b style={{marginLeft: "auto", marginRight: "auto"}}>Отсутствует</b>
                                 : <Grid fluid>
 
@@ -244,18 +244,20 @@ function ClientInfoDrawer(props: Props) {
                         <Container style={{paddingTop: "2%"}}>
 
                             {((lastPayment === null) || (lastPayment === undefined) || new Date(lastPayment!.subscriptionEndTime) < new Date())
-                                ? <Button color="green" appearance="primary" onClick={() => setIsChooseSubscriptionToProlongModalOpen(true)}>Продлить</Button>
-                                : <Button onClick={() => setIsChooseSubscriptionToProlongModalOpen(true)} >Продлить</Button>}
+                                ? <Button color="green" appearance="primary"
+                                          onClick={() => setIsChooseSubscriptionToProlongModalOpen(true)}>Продлить</Button>
+                                : <Button
+                                    onClick={() => setIsChooseSubscriptionToProlongModalOpen(true)}>Продлить</Button>}
 
                             {isChooseSubscriptionToProlongModalOpen
                                 ? <ProlongSubscriptionModal
-                                    lastSubscription={lastPayment!.subscription}
+                                    lastSubscription={lastPayment?.subscription ?? null}
                                     availableSubscriptions={availableSubscriptions}
                                     onProlongButtonClick={async (chosenSubscriptionId) => {
                                         await PaymentsService.AddPayment(props.client.id, chosenSubscriptionId);
                                         const result = await PaymentsService.GetClientLastPayment(props.client.id);
 
-                                        setSubscriptionFormValue(GetSubscriptionFormValue(result))
+                                        setSubscriptionFormValue(GetSubscriptionFormValue(result!))
                                         setIsChooseSubscriptionToProlongModalOpen(false);
                                     }}
                                     onCancelButtonClick={() => setIsChooseSubscriptionToProlongModalOpen(false)}/>
@@ -325,11 +327,19 @@ function GetClientInfoFormValue(client: Client): ClientInfoForm {
     }() as ClientInfoForm;
 }
 
-function GetSubscriptionFormValue(payment: PaymentFullInfo): SubscriptionFormValue {
+function GetSubscriptionFormValue(payment: PaymentFullInfo | null): SubscriptionFormValue {
+    if (payment === null) {
+        return new class {
+            name = "";
+            startTime = new Date();
+            endTime = new Date();
+        }() as SubscriptionFormValue;
+    }
+
     return new class {
-        name = payment.subscription.name;
-        startTime = new Date(payment.subscriptionStartTime);
-        endTime = new Date(payment.subscriptionEndTime);
+        name = payment!.subscription.name;
+        startTime = new Date(payment!.subscriptionStartTime);
+        endTime = new Date(payment!.subscriptionEndTime);
     }() as SubscriptionFormValue;
 }
 

@@ -3,7 +3,7 @@ import {Button, Modal, SelectPicker} from "rsuite";
 import React from "react";
 
 interface Props {
-    lastSubscription: Subscription,
+    lastSubscription: Subscription | null,
     availableSubscriptions: Subscription[],
     onProlongButtonClick: (chosenSubscriptionId: string) => void,
     onCancelButtonClick: () => void
@@ -11,7 +11,7 @@ interface Props {
 
 export function ProlongSubscriptionModal(props: Props) {
     const [isOpen, setIsOpen] = React.useState(true);
-    const [selectedSubscriptionId, setSelectedSubscriptionId] = React.useState(props.lastSubscription.id);
+    const [selectedSubscriptionId, setSelectedSubscriptionId] = React.useState(props.lastSubscription?.id ?? null);
 
     return (
         <Modal open={isOpen}>
@@ -22,7 +22,7 @@ export function ProlongSubscriptionModal(props: Props) {
 
             <Modal.Body>
                 <SelectPicker
-                    defaultValue={props.lastSubscription.id}
+                    defaultValue={props.lastSubscription?.id}
                     style={{width: "100%"}}
                     onSelect={(value, item, event) => setSelectedSubscriptionId(value)}
                     data={props.availableSubscriptions.map(x => ({label: x.name, value: x.id}))}/>
@@ -32,7 +32,7 @@ export function ProlongSubscriptionModal(props: Props) {
 
                 <Button
                     onClick={() => {
-                        props.onProlongButtonClick(selectedSubscriptionId);
+                        props.onProlongButtonClick(selectedSubscriptionId!);
                         setIsOpen(false);
                     }}
                     appearance="primary"
