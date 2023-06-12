@@ -13,10 +13,8 @@ import {
     Row
 } from "rsuite";
 import React from "react";
-import {SchemaModel, StringType, DateType, NumberType} from "schema-typed"
-import Client from "../../Models/Client";
+import {SchemaModel, StringType, NumberType} from "schema-typed"
 import {FormInstance} from "rsuite/esm/Form/Form";
-import ClientsService from "../../Services/ClientsService";
 import {Subscription} from "../../Models/Subscription";
 import {SubscriptionsService} from "../../Services/SubscriptionsService";
 

@@ -1,11 +1,22 @@
 import fetch from "node-fetch";
 import {Subscription} from "../Models/Subscription";
-import Client from "../Models/Client";
-import {SearchClientsRequest} from "./Requests/SearchClientsRequest";
 import {SearchSubscriptionsRequest} from "./Requests/SearchSubscriptionsRequest";
 
 export class SubscriptionsService {
     static BasePath = "http://localhost:5000/subscriptions/";
+
+    public static async GetAllSubscriptions(): Promise<Subscription[]> {
+        const response = await fetch(
+            `${this.BasePath}all`,
+            {
+                method: "GET",
+                headers: {
+                    Accept: 'application/json',
+                }
+            });
+
+        return (await response.json()) as Subscription[];
+    }
 
     public static async GetSubscription(id: string): Promise<Subscription> {
         const response = await fetch(

@@ -1,11 +1,6 @@
 import {Button, Container, Content, FlexboxGrid, Input, InputGroup, Pagination} from 'rsuite';
 import SearchIcon from '@rsuite/icons/Search';
-import Client from "../Models/Client";
-import React, {useEffect} from "react";
-import ClientInfoDrawer from "../Components/Drawers/ClientInfoDrawer";
-import ClientsService from "../Services/ClientsService";
-import {SearchClientsRequest} from "../Services/Requests/SearchClientsRequest";
-import {AddClientDrawer} from "../Components/Drawers/AddClientDrawer";
+import React from "react";
 import {SubscriptionsTable} from "../Components/Tables/SubscriptionsTable";
 import {Subscription} from "../Models/Subscription";
 import {SubscriptionsService} from "../Services/SubscriptionsService";

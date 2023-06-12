@@ -1,9 +1,26 @@
-import {Button, ButtonToolbar, Col, Container, DatePicker, Divider, Drawer, Form, Grid, Modal, Row} from "rsuite";
+import {
+    Button,
+    ButtonToolbar,
+    Col,
+    Container,
+    DatePicker,
+    Divider,
+    Drawer,
+    Form,
+    Grid, Message,
+    Row
+} from "rsuite";
 import React from "react";
 import {SchemaModel, StringType, DateType} from "schema-typed"
 import Client from "../../Models/Client";
 import {FormInstance} from "rsuite/esm/Form/Form";
 import ClientsService from "../../Services/ClientsService";
+import {PaymentFullInfo} from "../../Models/PaymentFullInfo";
+import {PaymentsService} from "../../Services/PaymentsService";
+import {ProlongSubscriptionModal} from "../Modals/ProlongSubscriptionModal";
+import {SubscriptionsService} from "../../Services/SubscriptionsService";
+import {Subscription} from "../../Models/Subscription";
+import client from "../../Models/Client";
 
 interface Props {
     open: boolean,
@@ -12,13 +29,19 @@ interface Props {
     editInfo?: boolean
 }
 
-interface FormValues {
+interface ClientInfoForm {
     id: string;
     surname: string;
     name: string;
     patronymic: string;
     birthDate: Date;
     phone: string
+}
+
+interface SubscriptionFormValue {
+    name: string;
+    startTime: Date;
+    endTime: Date;
 }
 
 const model = SchemaModel({
@@ -35,9 +58,27 @@ const colStyle = {
 const phoneNumberIsNullMessage = "не указан";
 
 function ClientInfoDrawer(props: Props) {
-    const [formValue, setFormValue] = React.useState<FormValues>(GetFormValue(props.client));
+    const birthDateDatePicker = React.forwardRef((props, ref) => <DatePicker {...props} format="dd-MM-yyyy"
+                                                                             ref={ref as any}/>);
+    const startSubscriptionDatePicker = React.forwardRef((props, ref) => <DatePicker {...props}
+                                                                                     format="dd-MM-yyyy hh:mm"
+                                                                                     ref={ref as any}/>);
+    const endSubscriptionDateDatePicker = React.forwardRef((props, ref) => <DatePicker {...props}
+                                                                                       format="dd-MM-yyyy hh:mm"
+                                                                                       ref={ref as any}/>);
+
+
+    const [clientInfoFormValue, setClientInfoFormValue] = React.useState<ClientInfoForm>(GetClientInfoFormValue(props.client));
+    const [clientSubscriptionFormValue, setSubscriptionFormValue] = React.useState<SubscriptionFormValue>();
     const formRef = React.useRef<FormInstance>(null);
     const [editInfo, setEditInfo] = React.useState(props.editInfo ?? false);
+    const [lastPayment, setLastPayment] = React.useState<PaymentFullInfo>()
+    const [isChooseSubscriptionToProlongModalOpen, setIsChooseSubscriptionToProlongModalOpen] = React.useState(false);
+    const [availableSubscriptions, setAvailableSubscriptions] = React.useState<Subscription[]>([])
+
+    React.useEffect(() => {
+        (async () => UseEffect())()
+    }, []);
 
     return (
         <div>
@@ -68,8 +109,8 @@ function ClientInfoDrawer(props: Props) {
                         style={{paddingTop: "2%"}}
                         model={model}
                         plaintext={!editInfo}
-                        formValue={formValue}
-                        onChange={x => setFormValue(x as FormValues)}
+                        formValue={clientInfoFormValue}
+                        onChange={x => setClientInfoFormValue(x as ClientInfoForm)}
                         onSubmit={OnSubmitForm}
                     >
 
@@ -108,23 +149,23 @@ function ClientInfoDrawer(props: Props) {
                                     <Col style={colStyle}>
                                         <Form.Group controlId="birthDate">
                                             <Form.ControlLabel>ДатаРождения</Form.ControlLabel>
-                                            <Form.Control name="birthDate" accepter={DatePicker} style={colStyle}/>
+                                            <Form.Control name="birthDate" accepter={birthDateDatePicker}
+                                                          style={colStyle}/>
                                         </Form.Group>
                                     </Col>
 
                                     <Col style={colStyle}>
                                         <Form.Group controlId="phone">
                                             <Form.ControlLabel>Номер телефона</Form.ControlLabel>
-                                            <Form.Control name="phone" placeholder={phoneNumberIsNullMessage} style={colStyle}/>
+                                            <Form.Control name="phone" placeholder={phoneNumberIsNullMessage}
+                                                          style={colStyle}/>
                                         </Form.Group>
                                     </Col>
                                 </Row>
                             </Grid>
                         </Container>
 
-                        <Divider>Действия</Divider>
-
-                        <Container>
+                        <Container style={{paddingTop: "1%"}}>
                             <Form.Group>
                                 <ButtonToolbar style={{display: (editInfo ? "none" : "")}}>
                                     <Container>
@@ -156,38 +197,115 @@ function ClientInfoDrawer(props: Props) {
                             </Form.Group>
                         </Container>
                     </Form>
+
+                    <Divider>Абонемент</Divider>
+                    <Form
+                        style={{paddingTop: "2%"}}
+                        plaintext={true}
+                        formValue={clientSubscriptionFormValue}
+                    >
+
+                        <Container>
+                            {lastPayment === null
+                                ? <b style={{marginLeft: "auto", marginRight: "auto"}}>Отсутствует</b>
+                                : <Grid fluid>
+
+                                    <Row>
+
+                                        <Col style={colStyle}>
+                                            <Form.Group controlId="name">
+                                                <Form.ControlLabel>Название</Form.ControlLabel>
+                                                <Form.Control name="name" style={colStyle} checkAsync/>
+                                            </Form.Group>
+                                        </Col>
+
+                                        <Col style={colStyle}>
+                                            <Form.Group controlId="startTime">
+                                                <Form.ControlLabel>Начало</Form.ControlLabel>
+                                                <Form.Control name="startTime" accepter={startSubscriptionDatePicker}
+                                                              style={colStyle}/>
+                                            </Form.Group>
+                                        </Col>
+
+                                        <Col style={colStyle}>
+                                            <Form.Group controlId="endTime">
+                                                <Form.ControlLabel>Конец</Form.ControlLabel>
+                                                <Form.Control name="endTime" accepter={endSubscriptionDateDatePicker}
+                                                              style={colStyle}/>
+                                            </Form.Group>
+                                        </Col>
+
+                                    </Row>
+
+                                </Grid>}
+
+                        </Container>
+
+                        <Container style={{paddingTop: "2%"}}>
+
+                            {((lastPayment === null) || (lastPayment === undefined) || new Date(lastPayment!.subscriptionEndTime) < new Date())
+                                ? <Button color="green" appearance="primary" onClick={() => setIsChooseSubscriptionToProlongModalOpen(true)}>Продлить</Button>
+                                : <Button onClick={() => setIsChooseSubscriptionToProlongModalOpen(true)} >Продлить</Button>}
+
+                            {isChooseSubscriptionToProlongModalOpen
+                                ? <ProlongSubscriptionModal
+                                    lastSubscription={lastPayment!.subscription}
+                                    availableSubscriptions={availableSubscriptions}
+                                    onProlongButtonClick={async (chosenSubscriptionId) => {
+                                        await PaymentsService.AddPayment(props.client.id, chosenSubscriptionId);
+                                        const result = await PaymentsService.GetClientLastPayment(props.client.id);
+
+                                        setSubscriptionFormValue(GetSubscriptionFormValue(result))
+                                        setIsChooseSubscriptionToProlongModalOpen(false);
+                                    }}
+                                    onCancelButtonClick={() => setIsChooseSubscriptionToProlongModalOpen(false)}/>
+                                : <div/>}
+
+                        </Container>
+
+                    </Form>
+
                 </Drawer.Body>
             </Drawer>
         </div>
     )
 
-    function OnCancelEditButtonClick(): void
-    {
-        setFormValue(GetFormValue(props.client));
+    async function UseEffect(): Promise<void> {
+        const lastPaymentInfo = await PaymentsService.GetClientLastPayment(props.client.id);
+        const allSubscriptions = await SubscriptionsService.GetAllSubscriptions();
+
+
+        setSubscriptionFormValue(GetSubscriptionFormValue(lastPaymentInfo));
+        setLastPayment(lastPaymentInfo);
+        setAvailableSubscriptions(allSubscriptions);
+
+    }
+
+    function OnCancelEditButtonClick(): void {
+        setClientInfoFormValue(GetClientInfoFormValue(props.client));
 
         formRef.current!.cleanErrors();
 
         setEditInfo(false);
     }
 
-    async function OnSubmitForm()
-    {
-        if(!formRef.current!.check()) {
+    async function OnSubmitForm() {
+        if (!formRef.current!.check()) {
             return;
         }
 
-        let phone : string | null = formValue.phone;
+        let phone: string | null = clientInfoFormValue.phone;
 
-        if (phone.trim() === "" || phone === phoneNumberIsNullMessage){
+        if (phone.trim() === "" || phone === phoneNumberIsNullMessage) {
             phone = null;
         }
 
         await ClientsService.UpdateClient(new Client(
-            formValue.id,
-            formValue.surname,
-            formValue.name,
-            formValue.patronymic,
-            formValue.birthDate.toISOString(),
+            clientInfoFormValue.id,
+            clientInfoFormValue.surname,
+            clientInfoFormValue.name,
+            clientInfoFormValue.patronymic,
+            clientInfoFormValue.birthDate.toISOString(),
             phone
         ));
 
@@ -196,7 +314,7 @@ function ClientInfoDrawer(props: Props) {
 }
 
 
-function GetFormValue(client: Client): FormValues {
+function GetClientInfoFormValue(client: Client): ClientInfoForm {
     return new class {
         id = client.id;
         surname = client.surname;
@@ -204,7 +322,15 @@ function GetFormValue(client: Client): FormValues {
         patronymic = client.patronymic;
         birthDate = new Date(client.birthDate);
         phone = client.phone ?? phoneNumberIsNullMessage
-    }() as FormValues;
+    }() as ClientInfoForm;
+}
+
+function GetSubscriptionFormValue(payment: PaymentFullInfo): SubscriptionFormValue {
+    return new class {
+        name = payment.subscription.name;
+        startTime = new Date(payment.subscriptionStartTime);
+        endTime = new Date(payment.subscriptionEndTime);
+    }() as SubscriptionFormValue;
 }
 
 export default ClientInfoDrawer;
