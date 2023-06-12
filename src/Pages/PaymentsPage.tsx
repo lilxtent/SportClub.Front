@@ -15,7 +15,7 @@ const containerStyles = {
     width: tableWidth + "px",
     marginLeft: "auto",
     marginRight: "auto",
-    paddingTop: "5%"
+    paddingTop: "4%"
 }
 
 export function PaymentsPage() {

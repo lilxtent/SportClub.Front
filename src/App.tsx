@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Container, Content, CustomProvider} from "rsuite";
+import {Container, Content, CustomProvider, Footer, Header, IconButton} from "rsuite";
 import {ruRU} from "rsuite/locales";
 import SideBar from "./Components/SideBar";
 import {Route, Routes} from "react-router-dom";
@@ -7,6 +7,7 @@ import VisitsPage from "./Pages/VisitsPage";
 import ClientsPage from "./Pages/ClientsPage";
 import {SubscriptionsPage} from "./Pages/SubscriptionsPage";
 import {PaymentsPage} from "./Pages/PaymentsPage";
+import QrcodeIcon from '@rsuite/icons/Qrcode';
 
 function App() {
     const [expanded, setExpanded] = useState(true);
@@ -26,6 +27,8 @@ function App() {
                             <Route path="/payments" element={<PaymentsPage/>}/>
                         </Routes>
                     </Content>
+                    <Footer style={{paddingBottom: "1%", width: "99.5%"}}><IconButton style={{float: "right"}} icon={<QrcodeIcon style={{height: "2em", width: "2em"}}/>}/></Footer>
+
                 </Container>
             </Container>
         </CustomProvider>

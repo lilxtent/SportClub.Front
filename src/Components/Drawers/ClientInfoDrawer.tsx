@@ -206,7 +206,7 @@ function ClientInfoDrawer(props: Props) {
                     >
 
                         <Container>
-                            {lastPayment === null
+                            {lastPayment ===undefined || lastPayment === null
                                 ? <b style={{marginLeft: "auto", marginRight: "auto"}}>Отсутствует</b>
                                 : <Grid fluid>
 
