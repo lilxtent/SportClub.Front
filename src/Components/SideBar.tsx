@@ -6,6 +6,7 @@ import AngleLeftIcon from '@rsuite/icons/legacy/AngleLeft';
 import AngleRightIcon from '@rsuite/icons/legacy/AngleRight';
 import PageIcon from '@rsuite/icons/Page';
 import CreditCardPlusIcon from '@rsuite/icons/CreditCardPlus';
+import BarLineChartIcon from '@rsuite/icons/BarLineChart';
 
 interface Props {
     expanded: boolean,
@@ -19,6 +20,7 @@ function SideBar(props: Props) {
             style={{
                 display: 'flex',
                 flexDirection: 'column',
+                position: "fixed"
             }}
             width={props.expanded ? 200 : 56}
             collapsible
@@ -29,9 +31,10 @@ function SideBar(props: Props) {
                 <Sidenav.Body>
 
                     <Nav>
-                        <Nav.Item href="/visits" icon={<HistoryIcon/>}>Визиты</Nav.Item>
                         <Nav.Item href="/clients" icon={<PeoplesIcon/>}>Клиенты</Nav.Item>
                         <Nav.Item href="/subscriptions" icon={<PageIcon/>}>Абонементы</Nav.Item>
+                        <Nav.Item href="/statistics" icon={<BarLineChartIcon/>}>Статистика</Nav.Item>
+                        <Nav.Item href="/visits" icon={<HistoryIcon/>}>Визиты</Nav.Item>
                         <Nav.Item href="/payments" icon={<CreditCardPlusIcon/>}>Платежи</Nav.Item>
                     </Nav>
 

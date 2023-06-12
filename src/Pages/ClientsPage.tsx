@@ -50,6 +50,7 @@ function ClientsPage() {
                                 <InputGroup.Button onClick={(x) => OnSearchButtonClick()}>
                                     <SearchIcon/>
                                 </InputGroup.Button>
+                                <InputGroup.Addon>{`${totalClientsCount} клиента`}</InputGroup.Addon>
                             </InputGroup>
                         </FlexboxGrid.Item>
 

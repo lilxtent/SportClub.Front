@@ -10,6 +10,7 @@ import {PaymentsPage} from "./Pages/PaymentsPage";
 import QrcodeIcon from '@rsuite/icons/Qrcode';
 import {Html5QrcodeScanType, Html5QrcodeScanner} from "html5-qrcode";
 import {CheckVisitModal} from "./Components/Modals/CheckVisitModal";
+import {StatisticsPage} from "./Pages/StatisticsPage";
 
 function App() {
     const [expanded, setExpanded] = useState(true);
@@ -30,6 +31,7 @@ function App() {
                         <Routes>
                             <Route path="/visits" element={<VisitsPage/>}/>
                             <Route path="/clients" element={<ClientsPage/>}/>
+                            <Route path="/statistics" element={<StatisticsPage/>}/>
                             <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
                             <Route path="/payments" element={<PaymentsPage/>}/>
                         </Routes>
