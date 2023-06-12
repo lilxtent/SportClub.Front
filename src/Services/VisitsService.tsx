@@ -4,6 +4,17 @@ import Visit from "../Models/Visit";
 export class VisitsService {
     static BasePath = "http://localhost:5000/visits/";
 
+    public static async AddVisits(clientId: string): Promise<void> {
+        await fetch(
+            `${this.BasePath}add?clientId=${clientId}`,
+            {
+                method: "POST",
+                headers: {
+                    Accept: 'application/json'
+                }
+            });
+    }
+
     public static async GetVisits(skip: number, take: number): Promise<GetVisitsResponse> {
         const response = await fetch(
             `${this.BasePath}last?skip=${skip}&take=${take}`,

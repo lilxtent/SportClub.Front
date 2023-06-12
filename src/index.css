@@ -1,1 +1,6 @@
 @import '~rsuite/dist/rsuite.min.css';
+
+.html5-qrcode-element{
+    background-color: darkgrey;
+    color: black;
+}
