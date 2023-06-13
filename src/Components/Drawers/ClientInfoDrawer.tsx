@@ -7,7 +7,7 @@ import {
     Divider,
     Drawer,
     Form,
-    Grid, Message,
+    Grid, Header, Message,
     Row
 } from "rsuite";
 import React from "react";
@@ -22,6 +22,7 @@ import {SubscriptionsService} from "../../Services/SubscriptionsService";
 import {Subscription} from "../../Models/Subscription";
 import client from "../../Models/Client";
 import {MinioService} from "../../Services/MinioService";
+import {TakePictureModal} from "../Modals/TakePictureModal";
 
 interface Props {
     open: boolean,
@@ -76,12 +77,12 @@ function ClientInfoDrawer(props: Props) {
     const [isChooseSubscriptionToProlongModalOpen, setIsChooseSubscriptionToProlongModalOpen] = React.useState(false);
     const [availableSubscriptions, setAvailableSubscriptions] = React.useState<Subscription[]>([])
     const [clientImage, setClientImage] = React.useState<string | null>();
-
+    const [showTakePictureModal, setShowTakePictureModal] = React.useState(false);
 
     React.useEffect(() => {
         (async () => UseEffect())()
-    }, []);
-//require('D:\\Repository\\Diplom\\sports-club-web\\src\\Images\\sonic.jpg')
+    }, [showTakePictureModal]);
+
     return (
         <div>
             <Drawer open={props.open} onClose={props.onClose}>
@@ -92,8 +93,8 @@ function ClientInfoDrawer(props: Props) {
 
                 <Drawer.Body>
 
-                    <div>
-                        <img
+                    <Container>
+                       <Header> <img
                             style={{
                                 marginLeft: "auto",
                                 marginRight: "auto",
@@ -104,7 +105,16 @@ function ClientInfoDrawer(props: Props) {
                             src={clientImage!}
                             alt={"фото"}
                         />
-                    </div>
+                       </Header>
+
+                        <Button onClick={() => setShowTakePictureModal(true)}>Сфотографировать</Button>
+
+                        {showTakePictureModal
+                            ? <TakePictureModal clientId={props.client.id} onClose={() => setShowTakePictureModal(false)}/>
+                            : <div/>}
+
+
+                    </Container>
 
                     <Form
                         ref={formRef}

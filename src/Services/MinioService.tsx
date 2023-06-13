@@ -1,8 +1,25 @@
-import fetch from "node-fetch";
-import Visit from "../Models/Visit";
+import fetch, {BodyInit} from "node-fetch";
+import {Form} from "rsuite";
 
 export class MinioService {
     static BasePath = "http://localhost:5000/minio/";
+
+    public static async AddImage(fileName: string, imgSrc: string) {
+        const blob = await fetch(imgSrc).then(x => x.blob());
+        const formData = new FormData();
+
+        formData.append("image", blob as Blob);
+
+        await fetch(
+            `${this.BasePath}add-image/${fileName}.jpg`,
+            {
+                method: "PUT",
+                headers: {
+                    Accept: '*/*',
+                },
+                body: formData as BodyInit,
+            });
+    }
 
     public static async GetImageOrDefault(fileName: string) {
         const response = await fetch(
