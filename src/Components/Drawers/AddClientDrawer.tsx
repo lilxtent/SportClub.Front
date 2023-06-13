@@ -1,14 +1,32 @@
-import {Button, ButtonToolbar, Col, Container, DatePicker, Divider, Drawer, Form, Grid, Modal, Row} from "rsuite";
+import {
+    Button,
+    ButtonToolbar,
+    Col,
+    Container,
+    DatePicker,
+    Divider,
+    Drawer,
+    Form,
+    Grid,
+    Header,
+    Modal,
+    Row
+} from "rsuite";
 import React from "react";
 import {SchemaModel, StringType, DateType} from "schema-typed"
 import Client from "../../Models/Client";
 import {FormInstance} from "rsuite/esm/Form/Form";
 import ClientsService from "../../Services/ClientsService";
+import {TakePictureModal} from "../Modals/TakePictureModal";
+import {PaymentsService} from "../../Services/PaymentsService";
+import {SubscriptionsService} from "../../Services/SubscriptionsService";
+import {MinioService} from "../../Services/MinioService";
 
 interface Props {
-    open: boolean,
-    onClose: () => void,
-    close: () => void
+    open: boolean;
+    onClose: () => void;
+    close: () => void;
+    clientId: string;
 }
 
 class FormValues {
@@ -38,9 +56,16 @@ const colStyle = {
 }
 
 export function AddClientDrawer(props: Props) {
+    const formRef = React.useRef<FormInstance>(null);
+
     const [formValue, setFormValue] = React.useState<FormValues>(new FormValues());
     const [isOpen, setIsOpen] = React.useState(props.open);
-    const formRef = React.useRef<FormInstance>(null);
+    const [clientImage, setClientImage] = React.useState<string | null>();
+    const [showTakePictureModal, setShowTakePictureModal] = React.useState(false);
+
+    React.useEffect(() => {
+        (async () => UseEffect())()
+    }, [showTakePictureModal]);
 
     return (
         <div>
@@ -55,8 +80,8 @@ export function AddClientDrawer(props: Props) {
 
                 <Drawer.Body>
 
-                    <div>
-                        <img
+                    <Container>
+                        <Header> <img
                             style={{
                                 marginLeft: "auto",
                                 marginRight: "auto",
@@ -64,10 +89,18 @@ export function AddClientDrawer(props: Props) {
                                 height: 256,
                                 width: 256
                             }}
-                            src={require('D:\\Repository\\Diplom\\sports-club-web\\src\\Images\\sonic.jpg')}
+                            src={clientImage!}
                             alt={"фото"}
                         />
-                    </div>
+                        </Header>
+
+                        <Button onClick={() => setShowTakePictureModal(true)}>Сфотографировать</Button>
+
+                        {showTakePictureModal
+                            ? <TakePictureModal clientId={props.clientId} onClose={() => setShowTakePictureModal(false)}/>
+                            : <div/>}
+
+                    </Container>
 
                     <Form
                         ref={formRef}
@@ -159,6 +192,12 @@ export function AddClientDrawer(props: Props) {
         </div>
     )
 
+    async function UseEffect(): Promise<void> {
+        const img = await MinioService.GetImageOrDefault(`${props.clientId}.jpg`);
+
+        setClientImage(URL.createObjectURL(img));
+    }
+
     function OnCancelEditButtonClick(): void
     {
         formRef.current!.cleanErrors();
@@ -174,7 +213,7 @@ export function AddClientDrawer(props: Props) {
         }
 
         await ClientsService.AddClient(new Client(
-            crypto.randomUUID(),
+            props.clientId,
             formValue.surname,
             formValue.name,
             formValue.patronymic,

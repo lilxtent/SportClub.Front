@@ -28,7 +28,7 @@ function ClientsPage() {
     const [showClientModalPage, setShowClientModalPage] = React.useState(false);
     const [addClientModalPage, setAddClientModalPage] = React.useState(false);
     const [searchValue, setSearchValue] = React.useState("");
-
+    const [newClientId, setNewClientId] = React.useState(crypto.randomUUID());
 
     React.useEffect(() => {
         (async () => UseEffect())()
@@ -93,6 +93,7 @@ function ClientsPage() {
 
             {addClientModalPage
                 ? <AddClientDrawer
+                    clientId={newClientId}
                     open={true}
                     close={async () => {
                         setAddClientModalPage(false);
@@ -101,6 +102,7 @@ function ClientsPage() {
                     onClose={async () => {
                         await UseEffect();
                     }}/>
+
                 : <div/>}
 
             {showClientModalPage

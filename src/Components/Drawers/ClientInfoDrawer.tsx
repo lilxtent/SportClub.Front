@@ -113,7 +113,6 @@ function ClientInfoDrawer(props: Props) {
                             ? <TakePictureModal clientId={props.client.id} onClose={() => setShowTakePictureModal(false)}/>
                             : <div/>}
 
-
                     </Container>
 
                     <Form
