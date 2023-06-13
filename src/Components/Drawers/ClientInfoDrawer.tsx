@@ -21,6 +21,7 @@ import {ProlongSubscriptionModal} from "../Modals/ProlongSubscriptionModal";
 import {SubscriptionsService} from "../../Services/SubscriptionsService";
 import {Subscription} from "../../Models/Subscription";
 import client from "../../Models/Client";
+import {MinioService} from "../../Services/MinioService";
 
 interface Props {
     open: boolean,
@@ -67,7 +68,6 @@ function ClientInfoDrawer(props: Props) {
                                                                                        format="dd-MM-yyyy hh:mm"
                                                                                        ref={ref as any}/>);
 
-
     const [clientInfoFormValue, setClientInfoFormValue] = React.useState<ClientInfoForm>(GetClientInfoFormValue(props.client));
     const [clientSubscriptionFormValue, setSubscriptionFormValue] = React.useState<SubscriptionFormValue>();
     const formRef = React.useRef<FormInstance>(null);
@@ -75,11 +75,13 @@ function ClientInfoDrawer(props: Props) {
     const [lastPayment, setLastPayment] = React.useState<PaymentFullInfo | null>()
     const [isChooseSubscriptionToProlongModalOpen, setIsChooseSubscriptionToProlongModalOpen] = React.useState(false);
     const [availableSubscriptions, setAvailableSubscriptions] = React.useState<Subscription[]>([])
+    const [clientImage, setClientImage] = React.useState<string | null>();
+
 
     React.useEffect(() => {
         (async () => UseEffect())()
     }, []);
-
+//require('D:\\Repository\\Diplom\\sports-club-web\\src\\Images\\sonic.jpg')
     return (
         <div>
             <Drawer open={props.open} onClose={props.onClose}>
@@ -99,7 +101,7 @@ function ClientInfoDrawer(props: Props) {
                                 height: 256,
                                 width: 256
                             }}
-                            src={require('D:\\Repository\\Diplom\\sports-club-web\\src\\Images\\sonic.jpg')}
+                            src={clientImage!}
                             alt={"фото"}
                         />
                     </div>
@@ -281,6 +283,10 @@ function ClientInfoDrawer(props: Props) {
         setLastPayment(lastPaymentInfo);
         setAvailableSubscriptions(allSubscriptions);
 
+
+        const img = await MinioService.GetImageOrDefault(`${props.client.id}.jpg`);
+
+        setClientImage(URL.createObjectURL(img));
     }
 
     function OnCancelEditButtonClick(): void {
