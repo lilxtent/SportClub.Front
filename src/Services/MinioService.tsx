@@ -34,7 +34,7 @@ export class MinioService {
         if (response.status === 204) {
 
             const responseDefault = await fetch(
-                `${this.BasePath}get-image/8rOGTkX6KZk.jpg`,
+                `${this.BasePath}get-image/default.jpg`,
                 {
                     method: "GET",
                     headers: {
